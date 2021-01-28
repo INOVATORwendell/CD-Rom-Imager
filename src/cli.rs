@@ -51,8 +51,6 @@ pub fn make_iso() -> String {
         .expect("failed to execute process");
 
 
-    //let result : Vec<&str> = dmesg.split_terminator(("\n")).collect();
-
-
     return  String::from_utf8_lossy(&output.stdout).to_string();
 }
+
