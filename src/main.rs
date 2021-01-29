@@ -117,12 +117,24 @@ use serde::{Deserialize, Serialize};
 use serde_json::Result;
 use rocket::response::content;
 use rocket::response::content::Json;
-use crate::cli::{dmesg_last, cd_info};
+use crate::cli::{dmesg_last, cd_info, write_from_drive};
+use rocket::http::RawStr;
+use std::fs::File;
 
 #[derive(Serialize, Deserialize)]
 struct Json_Info {
     info: String,
     date: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Write_Return {
+    filename: String,
+    date: String,
+    size: String,
+    file_type:String,
+    speed:String,
+
 }
 #[get("/dmesg")]
 fn dmesg_json() -> Json<Result<String>> {
@@ -132,7 +144,32 @@ fn dmesg_json() -> Json<Result<String>> {
     };
     return content::Json(serde_json::to_string(&address))
 }
+#[get("/write/<iso_name>")]
+fn write_file(iso_name:&RawStr) -> Json<Result<String>> {
+        println!("{}",iso_name.as_str());
+    let log=write_from_drive(iso_name.as_str());
 
+        let file=iso_name.as_str();
+        let date=Utc::today().to_string();
+        let mut iso_file = File::create(file).unwrap();
+        let size=iso_file.metadata().unwrap().len();
+        let file_type=    iso_file.metadata().unwrap().file_type().is_file();
+
+        let speed=8;
+
+       let write_json=Write_Return{
+            filename: file.to_string(),
+            date:date,
+            size: size.to_string(),
+            file_type: "file : iso".to_string(),
+            speed: speed.to_string()
+        };
+
+
+        println!("{}",serde_json::to_string(&write_json).unwrap());
+
+    return content::Json(serde_json::to_string(&write_json))
+}
 #[get("/cd-info")]
 fn cd_info_json() -> Json<Result<String>> {
     let address = Json_Info {
@@ -143,6 +180,6 @@ fn cd_info_json() -> Json<Result<String>> {
 }
 
 fn main() {
-    rocket::ignite().mount("/cd-rom_server", routes![dmesg_json,cd_info_json]).launch();
+    rocket::ignite().mount("/cd-rom_server", routes![dmesg_json,cd_info_json,write_file]).launch();
 
 }

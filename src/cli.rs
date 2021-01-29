@@ -31,8 +31,8 @@ pub fn cd_info() -> String {
 }
 
 pub fn write_from_drive(file_:&str) -> String {
-    let mut command ="cdrecord -v speed=8 dev=0,0,0  ".to_string();
-    command.push(file_.parse().unwrap());
+    let mut command ="/usr/bin/cdrecord -v speed=8 dev=0,0,0  ".to_string();
+    command.push_str(file_);
     let output = Command::new(command)
         .output()
         .expect("failed to execute process");
@@ -40,11 +40,11 @@ pub fn write_from_drive(file_:&str) -> String {
 
 
 }
-
+/*
 pub fn make_iso() -> String {
     let date = Local::now();
     let mut command ="sudo cat /dev/sr0 > ".to_string();
-    command.push(date.format("%Y%m%d%H%M%S").to_string().as_str().parse().unwrap());
+    command.push_str(date.format("%Y%m%d%H%M%S").to_string().as_str().parse().unwrap());
 
     let output = Command::new(command)
         .output()
@@ -54,3 +54,4 @@ pub fn make_iso() -> String {
     return  String::from_utf8_lossy(&output.stdout).to_string();
 }
 
+*/
