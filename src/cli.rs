@@ -31,27 +31,31 @@ pub fn cd_info() -> String {
 }
 
 pub fn write_from_drive(file_:&str) -> String {
-    let mut command ="/usr/bin/cdrecord -v speed=8 dev=0,0,0  ".to_string();
+
+
+    let mut command =" bash cdrecord -v speed=8 dev=0,0,0  ".to_string();
     command.push_str(file_);
-    let output = Command::new(command)
+
+    let output= Command::new("bash")
+        .args(&["-c", command.as_str()])
         .output()
-        .expect("failed to execute process");
+        .expect("echo command failed to start");
     return  String::from_utf8_lossy(&output.stdout).to_string();
 
 
 }
-/*
-pub fn make_iso() -> String {
-    let date = Local::now();
+
+pub fn make_iso(file:&str) -> String {
+
     let mut command ="sudo cat /dev/sr0 > ".to_string();
-    command.push_str(date.format("%Y%m%d%H%M%S").to_string().as_str().parse().unwrap());
-
-    let output = Command::new(command)
+    command.push_str(file);
+    let output= Command::new("bash")
+        .args(&["-c", command.as_str()])
         .output()
-        .expect("failed to execute process");
+        .expect("echo command failed to start");
+
+
 
 
     return  String::from_utf8_lossy(&output.stdout).to_string();
 }
-
-*/
